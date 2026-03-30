@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panda Nội Bộ</title>
+    <title>Panda Nội Bộ - Hệ Thống Voucher</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
@@ -19,25 +19,25 @@
 
     <div id="loader" class="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center">
         <div class="w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
-        <p class="text-[10px] font-black text-slate-400 mt-4 tracking-widest uppercase">Đang đồng bộ Panda...</p>
+        <p class="text-[10px] font-black text-slate-400 mt-4 tracking-widest uppercase">Đang đồng bộ dữ liệu Panda...</p>
     </div>
 
-    <header class="bg-white border-b p-4 flex justify-between items-center sticky top-0 z-40">
-        <div class="flex items-center gap-2" onclick="location.reload()">
+    <header class="bg-white border-b p-4 flex justify-between items-center sticky top-0 z-40 shadow-sm">
+        <div class="flex items-center gap-2" onclick="location.reload()" style="cursor: pointer;">
             <div class="panda-gradient p-2 rounded-lg text-white w-10 h-10 flex items-center justify-center"><i class="fa-solid fa-paw"></i></div>
             <h1 class="font-black tracking-tighter">PANDA NỘI BỘ</h1>
         </div>
-        <button onclick="toggleAdmin()" class="text-[10px] font-black bg-slate-100 px-4 py-2 rounded-full">QUẢN TRỊ</button>
+        <button onclick="toggleAdmin()" class="text-[10px] font-black bg-slate-100 px-4 py-2 rounded-full hover:bg-slate-200 transition-all">QUẢN TRỊ</button>
     </header>
 
     <main class="max-w-md mx-auto p-6">
         <div id="view-search" class="view-section active text-center">
             <div class="my-12 space-y-2">
-                <h2 class="text-5xl font-black tracking-tighter uppercase">Chào Panda!</h2>
-                <p class="text-slate-400 text-sm font-medium">Nhập số điện thoại để kiểm tra</p>
+                <h2 class="text-5xl font-black tracking-tighter uppercase leading-none">Chào Panda!</h2>
+                <p class="text-slate-400 text-sm font-medium">Nhập số điện thoại để kiểm tra ưu đãi</p>
             </div>
             <form onsubmit="searchStaff(event)" class="space-y-4">
-                <input type="tel" id="search-phone" placeholder="09xxxx..." class="w-full p-6 rounded-[2rem] border-2 border-slate-100 text-2xl font-black text-center outline-none focus:border-orange-500 shadow-xl">
+                <input type="tel" id="search-phone" placeholder="09xxxx..." class="w-full p-6 rounded-[2rem] border-2 border-slate-100 text-2xl font-black text-center outline-none focus:border-orange-500 shadow-xl transition-all">
                 <button type="submit" class="w-full panda-gradient text-white py-6 rounded-[2rem] font-black text-lg shadow-lg active:scale-95 transition-all">TIẾP TỤC</button>
             </form>
         </div>
@@ -49,12 +49,18 @@
                 <p id="display-phone" class="text-orange-500 font-black mb-8"></p>
                 
                 <div class="space-y-3">
-                    <button onclick="redeem('Voucher 40%')" class="w-full p-5 bg-orange-50 border-2 border-orange-100 rounded-2xl flex justify-between items-center group">
-                        <div class="text-left"><span class="block font-black text-orange-600">VOUCHER 40%</span><span class="text-[10px] text-orange-400 font-bold uppercase">Cho nhân viên</span></div>
+                    <button onclick="redeem('Voucher 40%')" class="w-full p-5 bg-orange-50 border-2 border-orange-100 rounded-2xl flex justify-between items-center group active:scale-95 transition-all">
+                        <div class="text-left">
+                            <span class="block font-black text-orange-600">VOUCHER 40%</span>
+                            <span class="text-[10px] text-orange-400 font-bold uppercase">Cho nhân viên Panda</span>
+                        </div>
                         <i class="fa-solid fa-circle-check text-orange-400"></i>
                     </button>
-                    <button onclick="redeem('Voucher 15% món')" class="w-full p-5 bg-blue-50 border-2 border-blue-100 rounded-2xl flex justify-between items-center group">
-                        <div class="text-left"><span class="block font-black text-blue-600">VOUCHER 15%/MÓN</span><span class="text-[10px] text-blue-400 font-bold uppercase">Gia đình nhân viên</span></div>
+                    <button onclick="redeem('Voucher 15% món')" class="w-full p-5 bg-blue-50 border-2 border-blue-100 rounded-2xl flex justify-between items-center group active:scale-95 transition-all">
+                        <div class="text-left">
+                            <span class="block font-black text-blue-600">VOUCHER 15%/MÓN</span>
+                            <span class="text-[10px] text-blue-400 font-bold uppercase">Gia đình nhân viên</span>
+                        </div>
                         <i class="fa-solid fa-users text-blue-400"></i>
                     </button>
                 </div>
@@ -69,28 +75,31 @@
                     <p id="stat-total" class="text-3xl font-black text-slate-900">0</p>
                 </div>
                 <div class="bg-white p-6 rounded-3xl border shadow-sm text-center">
-                    <p class="text-[9px] font-black text-slate-400 uppercase mb-2">Đã kích hoạt</p>
+                    <p class="text-[9px] font-black text-slate-400 uppercase mb-2">Voucher đã dùng</p>
                     <p id="stat-activated" class="text-3xl font-black text-orange-500">0</p>
                 </div>
             </div>
-            <button onclick="loadData()" class="w-full py-4 bg-slate-100 rounded-2xl font-black text-[10px] text-slate-500 uppercase tracking-widest">Làm mới dữ liệu</button>
+            <button onclick="loadData()" class="w-full py-4 bg-slate-100 rounded-2xl font-black text-[10px] text-slate-500 uppercase tracking-widest hover:bg-slate-200">Làm mới dữ liệu</button>
         </div>
 
         <div id="view-admin-login" class="view-section text-center py-10">
-            <h2 class="text-xl font-black mb-6 uppercase">Xác thực Admin</h2>
-            <input type="password" id="admin-pass" placeholder="Mật khẩu..." class="w-full p-5 border-2 rounded-2xl text-center font-black outline-none focus:border-black mb-4">
-            <button onclick="checkAdmin()" class="w-full bg-black text-white py-5 rounded-2xl font-black uppercase">Đăng nhập</button>
+            <h2 class="text-xl font-black mb-6 uppercase tracking-tighter">Xác thực Admin</h2>
+            <input type="password" id="admin-pass" placeholder="Nhập mật khẩu..." class="w-full p-5 border-2 rounded-2xl text-center font-black outline-none focus:border-black mb-4 shadow-sm">
+            <button onclick="checkAdmin()" class="w-full bg-black text-white py-5 rounded-2xl font-black uppercase hover:bg-slate-800 transition-all">Đăng nhập</button>
         </div>
     </main>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyta8vVl7pjnM5WVa822VwFrVRT6ccEx5mzihJvoYoBuy5TL9UnbrQ6ORvUAEyruQ8ExA/exec";
+        // LINK WEB APP MỚI CỦA NHƯ
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz8hkDBOMUYBF1RxJlN-nHchoZu-8bL82f_XLkKjQ9X70-r7eG7pzZ2I89sqNXzO1OdpQ/exec";
+        
         let employees = [];
         let currentStaff = null;
 
         window.goToView = (id) => {
             document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
             document.getElementById(id).classList.add('active');
+            window.scrollTo(0,0);
         };
 
         window.toggleAdmin = () => {
@@ -102,7 +111,7 @@
             if(document.getElementById('admin-pass').value === 'Nn@0410') {
                 document.getElementById('admin-pass').value = '';
                 goToView('view-admin-dashboard');
-            } else alert("Sai mật khẩu!");
+            } else alert("Mật khẩu không chính xác!");
         };
 
         async function loadData() {
@@ -114,36 +123,48 @@
                 document.getElementById('stat-total').innerText = employees.length;
                 document.getElementById('stat-activated').innerText = result.activatedCount;
                 document.getElementById('loader').style.display = 'none';
-            } catch (e) { alert("Lỗi kết nối dữ liệu!"); }
+            } catch (e) { 
+                console.error(e);
+                alert("Lỗi kết nối dữ liệu! Hãy đảm bảo bạn đã chọn 'Anyone' khi Deploy Web App.");
+            }
         }
 
         window.searchStaff = (e) => {
             e.preventDefault();
             let phone = document.getElementById('search-phone').value.replace(/\D/g,'');
-            if(!phone.startsWith('0')) phone = '0' + phone; // Tự thêm số 0 khi tìm kiếm
+            if(!phone) return alert("Vui lòng nhập SĐT");
+            
+            // Tự động thêm số 0 ở đầu nếu thiếu
+            if(!phone.startsWith('0')) phone = '0' + phone;
             
             currentStaff = employees.find(emp => emp.phone === phone);
             if(currentStaff) {
                 document.getElementById('display-name').innerText = currentStaff.name;
                 document.getElementById('display-phone').innerText = "SĐT: " + currentStaff.phone;
                 goToView('view-details');
-            } else alert("Không tìm thấy nhân viên Panda với SĐT này.");
+            } else {
+                alert("Không tìm thấy nhân viên Panda với SĐT này.");
+            }
         };
 
         window.redeem = async (type) => {
-            if(!confirm(`Kích hoạt ${type} cho ${currentStaff.name}?`)) return;
-            alert("Đang ghi nhận...");
+            if(!confirm(`Xác nhận kích hoạt ${type} cho ${currentStaff.name}?`)) return;
+            
+            alert("Đang ghi nhận lịch sử...");
             try {
                 await fetch(SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
                     body: JSON.stringify({ name: currentStaff.name, phone: currentStaff.phone, type: type })
                 });
-                alert("Kích hoạt thành công!");
+                
+                alert("Kích hoạt thành công! Lịch sử đã được lưu vào Sheet.");
                 document.getElementById('search-phone').value = '';
-                loadData(); // Cập nhật lại số lượng ở Admin
+                loadData(); // Cập nhật lại số lượng voucher trong Dashboard Admin
                 goToView('view-search');
-            } catch (e) { alert("Lỗi ghi nhận!"); }
+            } catch (e) { 
+                alert("Có lỗi xảy ra khi ghi nhận."); 
+            }
         };
 
         window.onload = loadData;
