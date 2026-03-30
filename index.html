@@ -30,6 +30,9 @@
             </div>
             <h1 class="text-lg font-black text-slate-900 tracking-tighter leading-none">PANDA NỘI BỘ</h1>
         </div>
+        <button id="btn-admin-access" onclick="toggleAdmin()" class="bg-slate-900 text-white px-5 py-2.5 rounded-full text-xs font-bold flex items-center gap-2 hover:bg-black transition-all active:scale-95">
+            <i class="fa-solid fa-shield-check"></i> <span id="admin-btn-text">Quản trị</span>
+        </button>
     </header>
 
     <main id="main-content" class="max-w-2xl mx-auto px-6 mt-8 opacity-0 transition-opacity duration-500">
@@ -46,69 +49,58 @@
         </div>
 
         <div id="view-details" class="view-section">
-             <div class="bg-white rounded-[3rem] p-10 border border-slate-200 shadow-2xl">
+            <button onclick="goToView('view-search')" class="mb-4 text-xs font-bold text-slate-400"><i class="fa-solid fa-arrow-left"></i> Quay lại</button>
+            <div class="bg-white rounded-[3rem] p-10 border border-slate-200 shadow-2xl">
                 <h2 id="display-name" class="text-4xl font-black text-slate-900 mb-2">...</h2>
                 <p id="display-phone" class="text-slate-400 font-bold mb-6"></p>
                 <div id="voucher-list" class="space-y-4">
-                    <div class="p-6 bg-orange-50 rounded-2xl border border-orange-100">
-                        <h4 class="font-black text-orange-600">Voucher 40% khả dụng</h4>
+                    <div class="p-6 bg-orange-50 rounded-2xl border border-orange-100 flex justify-between items-center">
+                        <div>
+                            <h4 class="font-black text-orange-600">Voucher 40%</h4>
+                            <p class="text-xs text-orange-400">Dành cho nhân viên</p>
+                        </div>
+                        <button class="bg-orange-500 text-white px-4 py-2 rounded-xl font-bold text-xs">KÍCH HOẠT</button>
                     </div>
                 </div>
-             </div>
+            </div>
+        </div>
+
+        <div id="view-admin-login" class="view-section">
+            <div class="text-center py-10">
+                <h2 class="text-2xl font-black mb-6">XÁC THỰC ADMIN</h2>
+                <input type="password" id="admin-pass" placeholder="Mật khẩu..." class="w-full p-4 border rounded-2xl mb-4 text-center">
+                <button onclick="checkAdminPass()" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold">ĐĂNG NHẬP</button>
+            </div>
+        </div>
+
+        <div id="view-admin-dashboard" class="view-section">
+            <h2 class="text-2xl font-black mb-6 uppercase">Quản trị hệ thống</h2>
+            <div class="bg-white p-6 rounded-2xl border border-slate-200">
+                <p class="text-sm font-bold text-slate-500">Tổng nhân viên trong danh sách:</p>
+                <p id="stat-total" class="text-4xl font-black text-orange-500">0</p>
+            </div>
+            <button onclick="loadData()" class="w-full mt-4 bg-orange-500 text-white py-4 rounded-2xl font-bold">LÀM MỚI DỮ LIỆU</button>
         </div>
     </main>
 
     <script>
-        // Cấu hình Google Sheet của bạn
         const SHEET_ID = "1ffiOvkXuKTVS4mzYjvf5k10RY316I-ubeGy_bP4BPnE";
         const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv`;
-
         let employees = [];
 
-        // Hàm chuyển trang
         window.goToView = (viewId) => {
             document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
             document.getElementById(viewId).classList.add('active');
         };
 
-        // Hàm tải dữ liệu từ Google Sheet
-        async function loadData() {
-            try {
-                const response = await fetch(SHEET_URL);
-                const data = await response.text();
-                // Xử lý CSV đơn giản
-                const rows = data.split('\n').slice(1); 
-                employees = rows.map(row => {
-                    const cols = row.split('","').map(c => c.replace(/"/g, ''));
-                    return { name: cols[0], phone: cols[1]?.replace(/\D/g, ''), dept: cols[2] };
-                });
-                
-                // Tắt màn hình loading
-                document.getElementById('loader').style.display = 'none';
-                document.getElementById('main-content').classList.remove('opacity-0');
-            } catch (error) {
-                console.error("Lỗi tải dữ liệu:", error);
-                alert("Không thể kết nối với dữ liệu Google Sheets. Hãy kiểm tra lại quyền chia sẻ file.");
-            }
-        }
+        window.toggleAdmin = () => {
+            const current = document.querySelector('.view-section.active').id;
+            if (current.startsWith('view-admin')) goToView('view-search');
+            else goToView('view-admin-login');
+        };
 
-        // Xử lý tìm kiếm
-        document.getElementById('form-staff-search').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const inputPhone = document.getElementById('search-phone').value.replace(/\D/g, '');
-            const emp = employees.find(e => e.phone === inputPhone);
-            
-            if (emp) {
-                document.getElementById('display-name').innerText = emp.name;
-                document.getElementById('display-phone').innerText = emp.phone;
-                goToView('view-details');
+        window.checkAdminPass = () => {
+            if (document.getElementById('admin-pass').value === 'Nn@0410') {
+                goToView('view-admin-dashboard');
             } else {
-                alert("Số điện thoại này không có trong hệ thống Panda.");
-            }
-        });
-
-        // Chạy tải dữ liệu khi mở trang
-        window.onload = loadData;
-    </script>
-</body>
-</html>
+                alert("M
