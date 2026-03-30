@@ -33,4 +33,149 @@
         <button onclick="toggleAdmin()" class="text-[10px] font-black bg-slate-100 px-4 py-2 rounded-full hover:bg-slate-200 transition-all">QUẢN TRỊ</button>
     </header>
 
-    <main id="main-content" class="max-w-
+    <main id="main-content" class="max-w-md mx-auto p-6">
+        <div id="view-search" class="view-section active">
+            <div class="text-center my-12 space-y-2">
+                <h2 class="text-5xl font-black tracking-tighter">CHÀO PANDA!</h2>
+                <p class="text-slate-400 text-sm font-medium">Nhập số điện thoại để nhận ưu đãi</p>
+            </div>
+            <form onsubmit="searchStaff(event)" class="space-y-4">
+                <input type="tel" id="search-phone" placeholder="Ví dụ: 090..." class="w-full p-6 rounded-[2rem] border-2 border-slate-100 text-2xl font-black text-center focus:border-orange-500 outline-none shadow-xl transition-all">
+                <button type="submit" class="w-full panda-gradient text-white py-6 rounded-[2rem] font-black text-lg shadow-lg active:scale-95 transition-all">TIẾP TỤC</button>
+            </form>
+        </div>
+
+        <div id="view-details" class="view-section">
+            <button onclick="goToView('view-search')" class="text-[10px] font-black text-slate-400 mb-6 flex items-center gap-2">
+                <i class="fa-solid fa-arrow-left"></i> QUAY LẠI
+            </button>
+            <div class="bg-white p-10 rounded-[3rem] shadow-2xl border border-slate-100 relative overflow-hidden">
+                <div class="relative z-10">
+                    <h2 id="display-name" class="text-4xl font-black tracking-tighter mb-1"></h2>
+                    <p id="display-phone" class="text-slate-400 font-bold mb-8 text-sm"></p>
+                    
+                    <div class="space-y-3">
+                        <button onclick="redeem('Voucher 40%')" class="w-full p-6 bg-orange-50 border-2 border-orange-100 rounded-2xl flex justify-between items-center hover:bg-orange-100 transition-all group">
+                            <div class="text-left">
+                                <span class="block font-black text-orange-600 text-lg">Voucher 40%</span>
+                                <span class="text-[10px] text-orange-400 font-bold uppercase">Dành cho nhân viên</span>
+                            </div>
+                            <i class="fa-solid fa-bolt text-orange-400 group-hover:text-orange-600"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-admin-login" class="view-section">
+            <div class="text-center py-10 space-y-6">
+                <h2 class="text-2xl font-black tracking-tighter">XÁC THỰC QUẢN TRỊ</h2>
+                <input type="password" id="admin-pass" placeholder="Mật khẩu..." class="w-full p-5 border-2 rounded-2xl text-center font-black tracking-widest outline-none focus:border-slate-900">
+                <button onclick="checkAdmin()" class="w-full bg-slate-900 text-white py-5 rounded-2xl font-black hover:bg-black transition-all">ĐĂNG NHẬP</button>
+            </div>
+        </div>
+
+        <div id="view-admin-dashboard" class="view-section space-y-6">
+            <h2 class="text-2xl font-black tracking-tighter uppercase">Báo cáo hệ thống</h2>
+            <div class="grid grid-cols-1 gap-4">
+                <div class="bg-white p-8 rounded-[2rem] border shadow-sm">
+                    <p class="text-[10px] font-black text-slate-400 uppercase mb-2">Nhân viên trong danh sách</p>
+                    <p id="stat-total" class="text-5xl font-black text-orange-500 tracking-tighter">0</p>
+                </div>
+            </div>
+            <button onclick="loadData()" class="w-full py-4 border-2 border-dashed rounded-2xl font-black text-[10px] text-slate-400 hover:text-slate-900 transition-all">LÀM MỚI DỮ LIỆU TỪ SHEET</button>
+        </div>
+    </main>
+
+    <script>
+        // ĐƯỜNG LINK CỦA NHƯ ĐÃ ĐƯỢC DÁN TẠI ĐÂY
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyta8vVl7pjnM5WVa822VwFrVRT6ccEx5mzihJvoYoBuy5TL9UnbrQ6ORvUAEyruQ8ExA/exec"; 
+        
+        let employees = [];
+        let currentStaff = null;
+
+        window.goToView = (id) => {
+            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            window.scrollTo(0,0);
+        };
+
+        window.toggleAdmin = () => {
+             const active = document.querySelector('.view-section.active').id;
+             active.startsWith('view-admin') ? goToView('view-search') : goToView('view-admin-login');
+        };
+
+        window.checkAdmin = () => {
+            // Mật khẩu lấy từ bản cũ của Như
+            if(document.getElementById('admin-pass').value === 'Nn@0410') {
+                document.getElementById('admin-pass').value = '';
+                goToView('view-admin-dashboard');
+            } else {
+                alert("Mật khẩu không chính xác!");
+            }
+        };
+
+        async function loadData() {
+            document.getElementById('loader').style.display = 'flex';
+            try {
+                const res = await fetch(SCRIPT_URL);
+                employees = await res.json();
+                document.getElementById('stat-total').innerText = employees.length;
+                document.getElementById('loader').style.display = 'none';
+            } catch (e) { 
+                console.error(e);
+                alert("Lỗi kết nối dữ liệu! Hãy đảm bảo bạn đã chọn 'Anyone' khi Deploy Web App."); 
+            }
+        }
+
+        window.searchStaff = (e) => {
+            e.preventDefault();
+            const phone = document.getElementById('search-phone').value.replace(/\D/g,'');
+            if(!phone) return alert("Vui lòng nhập số điện thoại");
+            
+            currentStaff = employees.find(emp => emp.phone === phone);
+            if(currentStaff) {
+                document.getElementById('display-name').innerText = currentStaff.name;
+                document.getElementById('display-phone').innerText = "SĐT: " + currentStaff.phone;
+                goToView('view-details');
+            } else {
+                alert("Không tìm thấy thông tin nhân viên này trong hệ thống Panda.");
+            }
+        };
+
+        window.redeem = async (type) => {
+            if(!confirm(`Xác nhận kích hoạt ${type} cho ${currentStaff.name}?`)) return;
+            
+            // Hiển thị trạng thái đang xử lý
+            const btn = event.currentTarget;
+            const originalContent = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="font-black text-slate-400 italic">Đang ghi nhận...</span>';
+
+            try {
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Cần thiết để gửi data sang Google Script mà không bị lỗi CORS
+                    body: JSON.stringify({ 
+                        name: currentStaff.name, 
+                        phone: currentStaff.phone, 
+                        type: type 
+                    })
+                });
+                
+                alert("Kích hoạt thành công! Lịch sử đã được ghi nhận vào Google Sheet.");
+                document.getElementById('search-phone').value = '';
+                goToView('view-search');
+            } catch (e) {
+                alert("Có lỗi xảy ra khi ghi nhận lịch sử.");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalContent;
+            }
+        };
+
+        // Tải dữ liệu ngay khi mở trang
+        window.onload = loadData;
+    </script>
+</body>
+</html>
