@@ -2,170 +2,231 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panda Nội Bộ - Hệ Thống Voucher</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Panda Master v9.0 - JuJu Update</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap');
-        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
         .view-section { display: none; }
-        .view-section.active { display: block !important; animation: fadeIn 0.3s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; } }
-        .panda-gradient { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); }
+        .view-section.active { display: block !important; }
+        .panda-card { background: white; border-radius: 1.5rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+        .info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #e2e8f0; font-size: 13px; }
+        .branch-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+        .branch-btn { border: 1px solid #e2e8f0; padding: 10px; border-radius: 0.75rem; font-weight: 700; font-size: 10px; text-align: left; background: #fff; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900 min-h-screen">
-
-    <div id="loader" class="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center">
-        <div class="w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
-        <p class="text-[10px] font-black text-slate-400 mt-4 tracking-widest uppercase">Đang đồng bộ dữ liệu Panda...</p>
+<body class="min-h-screen pb-10">
+    <div id="loader" class="fixed inset-0 bg-white/90 z-50 flex items-center justify-center hidden flex-col">
+        <div class="w-10 h-10 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
     </div>
 
-    <header class="bg-white border-b p-4 flex justify-between items-center sticky top-0 z-40 shadow-sm">
-        <div class="flex items-center gap-2" onclick="location.reload()" style="cursor: pointer;">
-            <div class="panda-gradient p-2 rounded-lg text-white w-10 h-10 flex items-center justify-center"><i class="fa-solid fa-paw"></i></div>
-            <h1 class="font-black tracking-tighter">PANDA NỘI BỘ</h1>
-        </div>
-        <button onclick="toggleAdmin()" class="text-[10px] font-black bg-slate-100 px-4 py-2 rounded-full hover:bg-slate-200 transition-all">QUẢN TRỊ</button>
+    <header class="bg-white border-b p-4 flex justify-between items-center sticky top-0 z-40">
+        <h1 class="font-black text-orange-600 uppercase tracking-tighter" onclick="location.reload()">PANDA NỘI BỘ</h1>
+        <button onclick="toggleAdmin()" class="text-[10px] font-bold bg-slate-100 px-3 py-1 rounded-full border">ADMIN</button>
     </header>
 
-    <main class="max-w-md mx-auto p-6">
+    <main class="max-w-md mx-auto p-4">
         <div id="view-search" class="view-section active text-center">
-            <div class="my-12 space-y-2">
-                <h2 class="text-5xl font-black tracking-tighter uppercase leading-none">Chào Panda!</h2>
-                <p class="text-slate-400 text-sm font-medium">Nhập số điện thoại để kiểm tra ưu đãi</p>
-            </div>
+            <h2 class="text-3xl font-black my-10 uppercase italic text-slate-800">TRA CỨU NHÂN SỰ</h2>
             <form onsubmit="searchStaff(event)" class="space-y-4">
-                <input type="tel" id="search-phone" placeholder="09xxxx..." class="w-full p-6 rounded-[2rem] border-2 border-slate-100 text-2xl font-black text-center outline-none focus:border-orange-500 shadow-xl transition-all">
-                <button type="submit" class="w-full panda-gradient text-white py-6 rounded-[2rem] font-black text-lg shadow-lg active:scale-95 transition-all">TIẾP TỤC</button>
+                <input type="tel" id="search-phone" placeholder="Nhập Số điện thoại..." class="w-full p-5 rounded-2xl border-2 text-center text-2xl font-black outline-none focus:border-orange-500">
+                <button type="submit" class="w-full bg-orange-600 text-white py-5 rounded-2xl font-black text-lg shadow-lg active:scale-95 transition-all">KIỂM TRA</button>
             </form>
         </div>
 
         <div id="view-details" class="view-section">
-            <button onclick="goToView('view-search')" class="text-[10px] font-black text-slate-400 mb-6 flex items-center gap-2"><i class="fa-solid fa-arrow-left"></i> QUAY LẠI</button>
-            <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl border border-slate-100 mb-6">
-                <h2 id="display-name" class="text-3xl font-black tracking-tighter mb-1 uppercase"></h2>
-                <p id="display-phone" class="text-orange-500 font-black mb-8"></p>
+            <div class="panda-card p-5 border-2">
+                <div class="text-center mb-6">
+                    <h2 id="d-name" class="text-2xl font-black uppercase text-slate-800"></h2>
+                    <p id="d-phone" class="text-orange-500 font-bold"></p>
+                </div>
+
+                <div class="bg-slate-50 p-4 rounded-xl mb-6">
+                    <div class="info-row"><span>Vị trí:</span><b id="d-pos"></b></div>
+                    <div class="info-row"><span>MS VT/Thẻ:</span><b id="d-msvt"></b></div>
+                    <div class="info-row"><span>Chi nhánh làm việc:</span><b id="d-dept"></b></div>
+                </div>
                 
-                <div class="space-y-3">
-                    <button onclick="redeem('Voucher 40%')" class="w-full p-5 bg-orange-50 border-2 border-orange-100 rounded-2xl flex justify-between items-center group active:scale-95 transition-all">
-                        <div class="text-left">
-                            <span class="block font-black text-orange-600">VOUCHER 40%</span>
-                            <span class="text-[10px] text-orange-400 font-bold uppercase">Cho nhân viên Panda</span>
+                <div id="u-alert" class="hidden p-5 bg-red-100 text-red-600 rounded-xl mb-4 font-black text-center text-sm uppercase">SĐT này đã sử dụng hôm nay!</div>
+
+                <div id="a-voucher">
+                    <p class="text-[10px] font-black text-slate-400 mb-1 uppercase tracking-widest">Bước 1: Chọn Chương Trình</p>
+                    <p class="text-[9px] text-red-500 italic mb-3 font-medium">* Giảm tối đa 1 triệu/bill. Mỗi người kích hoạt 1 lần/ngày.</p>
+                    
+                    <div class="flex flex-col gap-3">
+                        <button onclick="setV(100)" class="w-full p-4 bg-indigo-700 text-white rounded-xl font-black text-xs uppercase shadow-lg border-b-4 border-indigo-900 active:border-b-0 active:translate-y-1 transition-all">
+                             Khai trương JuJu Station
+                        </button>
+                        
+                        <div class="grid grid-cols-2 gap-3">
+                            <button onclick="setV(40)" class="p-4 bg-orange-600 text-white rounded-xl font-black text-xs uppercase">40% Nhân sự</button>
+                            <button onclick="setV(15)" class="p-4 bg-blue-600 text-white rounded-xl font-black text-xs uppercase">15% Gia đình</button>
                         </div>
-                        <i class="fa-solid fa-circle-check text-orange-400"></i>
-                    </button>
-                    <button onclick="redeem('Voucher 15% món')" class="w-full p-5 bg-blue-50 border-2 border-blue-100 rounded-2xl flex justify-between items-center group active:scale-95 transition-all">
-                        <div class="text-left">
-                            <span class="block font-black text-blue-600">VOUCHER 15%/MÓN</span>
-                            <span class="text-[10px] text-blue-400 font-bold uppercase">Gia đình nhân viên</span>
-                        </div>
-                        <i class="fa-solid fa-users text-blue-400"></i>
+                    </div>
+                </div>
+
+                <div id="a-branch" class="hidden mt-4">
+                    <p class="text-[10px] font-black text-orange-600 mb-3 uppercase tracking-widest text-center">Bước 2: Chọn chi nhánh đang ăn</p>
+                    <div class="branch-grid" id="branch-list"></div>
+                </div>
+
+                <div id="a-bill" class="hidden pt-6 border-t mt-6 text-center">
+                    <p class="text-green-600 font-black text-sm mb-4 uppercase italic">Kích hoạt thành công!</p>
+                    <input type="file" id="b-in" accept="image/*" capture="camera" class="hidden" onchange="upB(event)">
+                    <button onclick="document.getElementById('b-in').click()" class="w-full py-8 border-4 border-dashed border-orange-200 rounded-2xl text-orange-400 font-black flex flex-col items-center gap-2">
+                        <i class="fa-solid fa-camera text-3xl"></i>
+                        <span class="text-[10px] uppercase">Chụp hóa đơn để hoàn tất</span>
                     </button>
                 </div>
             </div>
         </div>
 
-        <div id="view-admin-dashboard" class="view-section space-y-4">
-            <h2 class="text-2xl font-black uppercase mb-6 tracking-tighter">Báo cáo quản trị</h2>
+        <div id="view-admin" class="view-section space-y-4">
             <div class="grid grid-cols-2 gap-4">
-                <div class="bg-white p-6 rounded-3xl border shadow-sm text-center">
-                    <p class="text-[9px] font-black text-slate-400 uppercase mb-2">Nhân viên</p>
-                    <p id="stat-total" class="text-3xl font-black text-slate-900">0</p>
-                </div>
-                <div class="bg-white p-6 rounded-3xl border shadow-sm text-center">
-                    <p class="text-[9px] font-black text-slate-400 uppercase mb-2">Voucher đã dùng</p>
-                    <p id="stat-activated" class="text-3xl font-black text-orange-500">0</p>
-                </div>
+                <div class="panda-card p-4 text-center"><p class="text-[9px] font-black text-slate-400">TỔNG NHÂN SỰ</p><p id="st-tot" class="text-2xl font-black">0</p></div>
+                <div class="panda-card p-4 text-center"><p class="text-[9px] font-black text-orange-500">ĐÃ DÙNG HÔM NAY</p><p id="st-act" class="text-2xl font-black text-orange-500">0</p></div>
             </div>
-            <button onclick="loadData()" class="w-full py-4 bg-slate-100 rounded-2xl font-black text-[10px] text-slate-500 uppercase tracking-widest hover:bg-slate-200">Làm mới dữ liệu</button>
+            <div id="hist-list" class="panda-card divide-y overflow-hidden text-left"></div>
         </div>
 
-        <div id="view-admin-login" class="view-section text-center py-10">
-            <h2 class="text-xl font-black mb-6 uppercase tracking-tighter">Xác thực Admin</h2>
-            <input type="password" id="admin-pass" placeholder="Nhập mật khẩu..." class="w-full p-5 border-2 rounded-2xl text-center font-black outline-none focus:border-black mb-4 shadow-sm">
-            <button onclick="checkAdmin()" class="w-full bg-black text-white py-5 rounded-2xl font-black uppercase hover:bg-slate-800 transition-all">Đăng nhập</button>
+        <div id="view-login" class="view-section py-10">
+            <div class="panda-card p-8 border-2">
+                <input type="password" id="pass" placeholder="Mật khẩu..." class="w-full p-4 border rounded-xl text-center font-black mb-4">
+                <button onclick="login()" class="w-full bg-slate-900 text-white py-4 rounded-xl font-black uppercase">Đăng nhập</button>
+            </div>
         </div>
     </main>
 
     <script>
-        // LINK WEB APP MỚI CỦA NHƯ
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz8hkDBOMUYBF1RxJlN-nHchoZu-8bL82f_XLkKjQ9X70-r7eG7pzZ2I89sqNXzO1OdpQ/exec";
-        
-        let employees = [];
-        let currentStaff = null;
-
-        window.goToView = (id) => {
-            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            window.scrollTo(0,0);
-        };
-
-        window.toggleAdmin = () => {
-             const active = document.querySelector('.view-section.active').id;
-             active.startsWith('view-admin') ? goToView('view-search') : goToView('view-admin-login');
-        };
-
-        window.checkAdmin = () => {
-            if(document.getElementById('admin-pass').value === 'Nn@0410') {
-                document.getElementById('admin-pass').value = '';
-                goToView('view-admin-dashboard');
-            } else alert("Mật khẩu không chính xác!");
-        };
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyWoXTMHtl5tjRQTMeglj0HXkigkuzZdRTxwPs2HePTfzwW8OurmSD80qCwUs7l3FisPQ/exec";
+        const BRANCHES = ["PVD Thủ Đức","PVH Q.12","ĐN Q.10","PVD Gò Vấp","Lê Trọng Tấn","Đường số 7","Nguyễn Thị Thập","Nguyễn Hữu Thọ","Hoà Bình","Bản Lẩu Q.10","Juju Bình Thạnh","Juju Gò Vấp","Juju Bình Tân","Hoàng Diệu DL","Trần Phú DL","Gà Đà Lạt","Trạm Đà Lạt","Vũng Tàu"];
+        let emps = [], used = [], hist = [], cur = null, selV = "";
 
         async function loadData() {
-            document.getElementById('loader').style.display = 'flex';
+            document.getElementById('loader').classList.remove('hidden');
             try {
-                const res = await fetch(SCRIPT_URL);
-                const result = await res.json();
-                employees = result.employees;
-                document.getElementById('stat-total').innerText = employees.length;
-                document.getElementById('stat-activated').innerText = result.activatedCount;
-                document.getElementById('loader').style.display = 'none';
+                const res = await fetch(SCRIPT_URL + "?t=" + Date.now());
+                const d = await res.json();
+                emps = d.employees; used = d.usedToday || []; hist = d.history || [];
+                document.getElementById('st-tot').innerText = emps.length;
+                document.getElementById('st-act').innerText = d.activatedCount;
+                document.getElementById('loader').classList.add('hidden');
             } catch (e) { 
                 console.error(e);
-                alert("Lỗi kết nối dữ liệu! Hãy đảm bảo bạn đã chọn 'Anyone' khi Deploy Web App.");
+                alert("Lỗi tải dữ liệu, vui lòng reload!"); 
             }
         }
 
         window.searchStaff = (e) => {
             e.preventDefault();
-            let phone = document.getElementById('search-phone').value.replace(/\D/g,'');
-            if(!phone) return alert("Vui lòng nhập SĐT");
+            let p = document.getElementById('search-phone').value.replace(/\D/g,'');
+            if(!p.startsWith('0')) p = '0' + p;
+            cur = emps.find(x => x.phone === p);
+            if(!cur) { alert("Số điện thoại này không có trong danh sách Panda!"); return; }
             
-            // Tự động thêm số 0 ở đầu nếu thiếu
-            if(!phone.startsWith('0')) phone = '0' + phone;
-            
-            currentStaff = employees.find(emp => emp.phone === phone);
-            if(currentStaff) {
-                document.getElementById('display-name').innerText = currentStaff.name;
-                document.getElementById('display-phone').innerText = "SĐT: " + currentStaff.phone;
-                goToView('view-details');
+            document.getElementById('d-name').innerText = cur.name;
+            document.getElementById('d-phone').innerText = cur.phone;
+            document.getElementById('d-pos').innerText = cur.pos;
+            document.getElementById('d-msvt').innerText = cur.msvt;
+            document.getElementById('d-dept').innerText = cur.dept;
+
+            const isU = used.includes(p);
+            document.getElementById('a-voucher').classList.toggle('hidden', isU);
+            document.getElementById('u-alert').classList.toggle('hidden', !isU);
+            document.getElementById('a-branch').classList.add('hidden');
+            document.getElementById('a-bill').classList.add('hidden');
+            goToView('view-details');
+        };
+
+        window.setV = (v) => { 
+            if (v === 100) {
+                selV = "Khai trương JuJu Station (Max 1tr)";
             } else {
-                alert("Không tìm thấy nhân viên Panda với SĐT này.");
+                selV = v === 40 ? "Voucher 40% NS" : "Voucher 15% Gia đình";
+            }
+            
+            document.getElementById('a-voucher').classList.add('hidden');
+            const bl = document.getElementById('branch-list');
+            bl.innerHTML = BRANCHES.map(b => `<button onclick="triggerF('${b}')" class="branch-btn">${b}</button>`).join('');
+            document.getElementById('a-branch').classList.remove('hidden');
+        };
+
+        window.triggerF = async (b) => {
+            document.getElementById('loader').classList.remove('hidden');
+            try {
+                const res = await fetch(SCRIPT_URL, { 
+                    method:'POST', 
+                    body:JSON.stringify({ 
+                        name:cur.name, 
+                        phone:cur.phone, 
+                        type:selV, 
+                        dept:cur.dept, 
+                        branch:b 
+                    })
+                });
+                const resultText = await res.text();
+                
+                if (resultText.trim() === "Used") { 
+                    alert("Số điện thoại này đã sử dụng chương trình trong hôm nay!"); 
+                    location.reload(); 
+                } else { 
+                    document.getElementById('loader').classList.add('hidden'); 
+                    document.getElementById('a-branch').classList.add('hidden'); 
+                    document.getElementById('a-bill').classList.remove('hidden');
+                    alert("Chúc mừng! Bạn đã kích hoạt thành công ưu đãi " + selV);
+                }
+            } catch (e) {
+                alert("Lỗi kết nối máy chủ!");
+                document.getElementById('loader').classList.add('hidden');
             }
         };
 
-        window.redeem = async (type) => {
-            if(!confirm(`Xác nhận kích hoạt ${type} cho ${currentStaff.name}?`)) return;
-            
-            alert("Đang ghi nhận lịch sử...");
-            try {
-                await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    body: JSON.stringify({ name: currentStaff.name, phone: currentStaff.phone, type: type })
-                });
-                
-                alert("Kích hoạt thành công! Lịch sử đã được lưu vào Sheet.");
-                document.getElementById('search-phone').value = '';
-                loadData(); // Cập nhật lại số lượng voucher trong Dashboard Admin
-                goToView('view-search');
-            } catch (e) { 
-                alert("Có lỗi xảy ra khi ghi nhận."); 
+        window.upB = (event) => {
+            const r = new FileReader();
+            r.onload = async (e) => {
+                document.getElementById('loader').classList.remove('hidden');
+                await fetch(SCRIPT_URL, { method:'POST', body:JSON.stringify({action:"upload_bill", bill:e.target.result}) });
+                alert("Hoàn tất! Hệ thống Panda đã ghi nhận lịch sử của bạn."); 
+                location.reload();
+            }; 
+            if(event.target.files[0]) r.readAsDataURL(event.target.files[0]);
+        };
+
+        window.login = () => { 
+            if(document.getElementById('pass').value === 'Nn@0410') { 
+                goToView('view-admin'); 
+                renderH(); 
+            } else {
+                alert("Sai mật khẩu Admin!"); 
             }
         };
+
+        window.toggleAdmin = () => { 
+            const act = document.querySelector('.view-section.active').id; 
+            if(act === 'view-admin' || act === 'view-login') goToView('view-search'); 
+            else goToView('view-login'); 
+        };
+
+        function goToView(id) { 
+            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active')); 
+            document.getElementById(id).classList.add('active'); 
+        }
+
+        function renderH() { 
+            document.getElementById('hist-list').innerHTML = hist.map(h => `
+                <div class="p-3 flex justify-between text-[10px]">
+                    <div>
+                        <b>${h.name}</b>
+                        <p class="text-slate-400">${h.branchUsed}</p>
+                    </div>
+                    <div class="text-right text-orange-500">
+                        <b>${h.type}</b>
+                        <p class="text-[8px] text-slate-300">${h.time}</p>
+                    </div>
+                </div>`).join(''); 
+        }
 
         window.onload = loadData;
     </script>
